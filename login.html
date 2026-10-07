@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <!-- CSS de Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/login.css">
+
+    <!-- El CSS de tus componentes (Toasts, Modales, etc.) -->
+    <link rel="stylesheet" href="css/componente.css">    
+    <link rel="icon" type="image/png" href="img/image.png">
 </head>
 <body class="bg-light d-flex align-items-center justify-content-center vh-100">
 
@@ -15,7 +19,7 @@
         <form id="loginForm" class="formulario">
             <div class="grupo-formulario mb-3">
                 <label for="correo" class="form-label">Correo electrónico</label>
-                <input type="email" id="correo" class="form-control" required>
+                <input type="text" id="correo" class="form-control" required>
             </div>
             
             <div class="grupo-formulario mb-3">
@@ -28,7 +32,53 @@
             </button>
         </form>
     </div>
+    
+    <!-- Scripts externos -->
+    <script src="https://cdn.jsdelivr.net/gh/sarailunacenobio05-cpu/Actividad-2-Utileria.js/js/utileria.js"></script>
+    <script src="/js/componente.js"></script>
+    
+    <!-- Tu lógica de validación -->
+    <script>
+    const loginForm = document.getElementById('loginForm');
 
-    <script src="js/login.js"></script>
+    loginForm.addEventListener('submit', function(evento) {
+        evento.preventDefault();
+
+        const correo = document.getElementById('correo').value;
+        const password = document.getElementById('password').value;
+
+        // Validamos usando el objeto 'utileria'
+        const correoEsValido = utileria.validarCorreo(correo);
+        const passwordEsValida = utileria.validarPassword(password);
+
+        if (!correoEsValido) {
+            Toast.error('Por favor ingresa un correo electrónico válido.', { 
+                title: 'Correo inválido' 
+            });
+            return; 
+        }
+
+        if (!passwordEsValida) {
+            Toast.warning('La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un carácter especial.', { 
+                title: 'Contraseña débil',
+                duration: 6000 
+            });
+            return; 
+        }
+        
+        Toast.success('Redirigiendo a tu cuenta...', { 
+            title: '¡Datos correctos!',
+            duration: 1500
+        });
+
+        // Guardamos el correo para mostrarlo en index.html
+        sessionStorage.setItem('usuario', correo);
+
+        // Esperamos un momento para que se vea el Toast y luego redirigimos
+        setTimeout(function() {
+            window.location.href = 'index.html';
+        }, 1500);
+    });
+    </script>
 </body>
 </html>

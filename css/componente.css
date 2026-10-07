@@ -1,0 +1,257 @@
+/* GaloUI - estilos (CSS puro, sin frameworks) · todas las clases llevan prefijo cv- */
+
+/* ---------- Colores: Paleta FC Barcelona (Blaugrana & Senyera Gold) ---------- */
+:root {
+  --cv-bg: #f4f6fb;
+  --cv-surface: #ffffff;
+  --cv-ink: #0a1128;
+  --cv-muted: #56617a;
+  --cv-line: #d8dfed;
+
+  --cv-fcb-blau: #004d98;
+  --cv-fcb-grana: #a50044;
+  --cv-fcb-gold: #edbb00;
+
+  --cv-accent: #004d98;
+  --cv-on-accent: #ffffff;
+  --cv-ok: #059669;
+  --cv-err: #a50044;
+  --cv-info: #004d98;
+  --cv-warn: #edbb00;
+  --cv-on-warn: #2c1f00;
+}
+
+/* Tema oscuro */
+[data-theme="dark"] {
+  --cv-bg: #070d1e;
+  --cv-surface: #0f1933;
+  --cv-ink: #f0f4fc;
+  --cv-muted: #8b9bb4;
+  --cv-line: #1c2b50;
+
+  --cv-accent: #1e70e4;
+  --cv-on-accent: #ffffff;
+  --cv-ok: #10b981;
+  --cv-err: #e01e5a;
+  --cv-info: #1e70e4;
+  --cv-warn: #ffc72c;
+  --cv-on-warn: #2c1f00;
+}
+
+/* ---------- Botones ---------- */
+.cv-btn {
+  font: inherit;
+  font-weight: 700;
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s, filter 0.2s;
+}
+.cv-btn:focus-visible { outline: 2px solid var(--cv-accent); outline-offset: 2px; }
+.cv-btn:hover { filter: brightness(1.08); }
+.cv-btn:active { transform: scale(0.96); }
+
+.cv-btn-primary { background: var(--cv-accent); color: var(--cv-on-accent); }
+.cv-btn-primary:hover { box-shadow: 0 4px 14px rgba(0, 77, 152, 0.35); }
+.cv-btn-ghost   { background: none; border-color: var(--cv-line); color: var(--cv-ink); }
+.cv-btn-ghost:hover { background: rgba(0, 77, 152, 0.08); }
+.cv-btn-success { background: var(--cv-ok);   color: #fff; }
+.cv-btn-success:hover { box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35); }
+.cv-btn-error   { background: var(--cv-err);  color: #fff; }
+.cv-btn-error:hover { box-shadow: 0 4px 14px rgba(165, 0, 68, 0.35); }
+.cv-btn-info    { background: var(--cv-info); color: #fff; }
+.cv-btn-info:hover { box-shadow: 0 4px 14px rgba(0, 77, 152, 0.35); }
+.cv-btn-warning { background: var(--cv-warn); color: var(--cv-on-warn); }
+.cv-btn-warning:hover { box-shadow: 0 4px 14px rgba(237, 187, 0, 0.35); }
+
+/* ---------- Toast ---------- */
+
+/* Contenedor: uno por cada esquina de la pantalla */
+.cv-toast-container {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  z-index: 9999;
+  pointer-events: none; /* no bloquea clics en la página */
+}
+/* --cv-x es desde dónde entra el toast (derecha o izquierda) */
+.cv-toast-container[data-pos="top-right"]    { top: 0;    right: 0; --cv-x: 110%; }
+.cv-toast-container[data-pos="top-left"]     { top: 0;    left: 0;  --cv-x: -110%; }
+.cv-toast-container[data-pos="bottom-right"] { bottom: 0; right: 0; --cv-x: 110%;  flex-direction: column-reverse; }
+.cv-toast-container[data-pos="bottom-left"]  { bottom: 0; left: 0;  --cv-x: -110%; flex-direction: column-reverse; }
+
+/* Cada notificación. --cv-c es su color según el tipo */
+.cv-toast {
+  --cv-c: var(--cv-info);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 300px;
+  padding: 14px 12px 17px 14px;
+  background: var(--cv-surface);
+  color: var(--cv-ink);
+  border: 1px solid var(--cv-line);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 20, 60, 0.16);
+  pointer-events: auto;
+  animation: cv-toast-in 0.4s ease-out;
+}
+.cv-toast.out { animation: cv-toast-out 0.25s forwards; }
+
+.cv-toast-success { --cv-c: var(--cv-ok); }
+.cv-toast-error   { --cv-c: var(--cv-err); }
+.cv-toast-warning { --cv-c: var(--cv-warn); }
+
+.cv-toast-icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--cv-c);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+}
+.cv-toast-warning .cv-toast-icon { color: var(--cv-on-warn); }
+
+.cv-toast-body { flex: 1; font-size: 14px; line-height: 1.45; }
+.cv-toast-title { display: block; font-weight: 800; }
+.cv-toast-title:empty { display: none; } /* sin título, no ocupa espacio */
+
+.cv-toast-close {
+  background: none;
+  border: 0;
+  color: var(--cv-muted);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.cv-toast-close:hover { color: var(--cv-ink); }
+
+/* Barra de progreso: además sirve de temporizador (ver el JS) */
+.cv-toast-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--cv-c);
+  transform-origin: left;
+  animation: cv-toast-bar linear forwards; /* la duración la pone el JS */
+  animation-duration: var(--cv-duracion);
+}
+.cv-toast:hover .cv-toast-bar { animation-play-state: paused; }
+
+@keyframes cv-toast-in  { from { transform: translateX(var(--cv-x, 110%)); opacity: 0; } }
+@keyframes cv-toast-out { to   { transform: scale(0.9); opacity: 0; } }
+@keyframes cv-toast-bar { to   { transform: scaleX(0); } }
+
+/* ---------- Modal ---------- */
+
+/* Fondo oscuro que cubre toda la pantalla; invisible hasta tener .open */
+.cv-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 9000;
+  background: rgba(4, 10, 26, 0.68);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s, visibility 0.25s;
+}
+.cv-modal-overlay.open { opacity: 1; visibility: visible; }
+
+.cv-modal {
+  width: min(440px, 100%);
+  padding: 28px;
+  background: var(--cv-surface);
+  color: var(--cv-ink);
+  border: 1px solid var(--cv-line);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 10, 40, 0.25);
+  transform: translateY(24px);
+  transition: transform 0.3s;
+}
+.cv-modal-overlay.open .cv-modal { transform: none; }
+
+.cv-modal-title { margin: 0 0 8px; font-size: 20px; }
+.cv-modal-text { margin: 0 0 24px; color: var(--cv-muted); line-height: 1.5; }
+.cv-modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ---------- Acordeón ---------- */
+.cv-acc-item { border-bottom: 1px solid var(--cv-line); }
+
+.cv-acc-head {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 4px;
+  background: none;
+  border: 0;
+  color: var(--cv-ink);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.cv-acc-head:hover { color: var(--cv-accent); }
+.cv-acc-head::after { content: "+"; color: var(--cv-accent); transition: transform 0.3s; font-size: 18px; }
+.cv-acc-item.open .cv-acc-head::after { transform: rotate(135deg); } /* la + se vuelve × */
+
+/* Truco: la fila del grid pasa de 0fr a 1fr para animar la altura */
+.cv-acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s;
+}
+.cv-acc-item.open .cv-acc-panel { grid-template-rows: 1fr; }
+.cv-acc-panel > div { overflow: hidden; color: var(--cv-muted); line-height: 1.6; }
+.cv-acc-panel p { margin: 0 0 16px; }
+
+/* ---------- Pestañas ---------- */
+.cv-tabs-nav {
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 4px;
+  background: var(--cv-bg);
+  border-radius: 12px;
+  border: 1px solid var(--cv-line);
+}
+.cv-tab-btn {
+  padding: 8px 16px;
+  background: none;
+  border: 0;
+  border-radius: 9px;
+  color: var(--cv-muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.cv-tab-btn:hover { color: var(--cv-ink); }
+.cv-tab-btn.active {
+  background: var(--cv-surface);
+  color: var(--cv-accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cv-tab-panel { display: none; color: var(--cv-muted); line-height: 1.6; }
+.cv-tab-panel.active { display: block; }
+
+/* Accesibilidad: sin animaciones largas para quien lo prefiera */
+@media (prefers-reduced-motion: reduce) {
+  .cv-toast, .cv-toast.out { animation-duration: 0.01s; }
+  .cv-modal, .cv-modal-overlay, .cv-acc-panel { transition: none; }
+}
