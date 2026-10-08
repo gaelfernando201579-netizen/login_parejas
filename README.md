@@ -16,7 +16,7 @@
 ## Integrantes del Equipo
 
 - Gael Fernando Ortíz Pérez
-- Saraí Luna Cenobio
+- Sarai Luna Cenobio
 
 ## Descripción Breve
 
@@ -103,8 +103,6 @@ Dentro del área de contenido principal, diseñamos el formulario de alta de alu
 Agregamos un campo para ingresar la fecha de nacimiento (o edad directa). Al presionar el botón de calcular/guardar, un script evalúa si el valor corresponde a alguien mayor o menor de 18 años. Dependiendo del resultado, disparamos dinámicamente un Modal de Bootstrap mostrando el mensaje correspondiente ("El alumno es mayor de edad" / "El alumno es menor de edad").
 
 ## Capturas de Pantalla del Flujo
-
-_(Nota: Reemplazar las rutas de las imágenes con las correctas de su carpeta `/img`)_
 
 **1. Pantalla de Acceso (Login)**
 ![Login](img/Login.png)
