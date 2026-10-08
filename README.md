@@ -118,7 +118,7 @@ _(Nota: Reemplazar las rutas de las imágenes con las correctas de su carpeta `/
 **2. Panel Principal con Formulario de Alumnos**
 ![Index](img/index.png)
 
-**4. Modal de Mayor/Menor de Edad funcionando**
+**3. Modal de Mayor/Menor de Edad funcionando**
 ![Modal](img/index_alumnos.png)
 
 **4. Formulario de Usuarios**
