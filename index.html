@@ -53,32 +53,37 @@
             </nav>
 
             <div class="container-fluid px-4 py-4">
-                <h2>Bienvenido al sistema</h2>
+                <!-- TÍTULO CENTRADO -->
+                <h2 class="text-center mb-4">Bienvenido al sistema</h2>
 
-                <!-- ============ FORMULARIO ALUMNOS ============ -->
-                <div class="card shadow-sm" style="max-width: 500px;">
-                    <div class="card-header bg-white">
-                        <h3 class="h5 mb-0">Alumnos</h3>
-                    </div>
-                    <div class="card-body">
-                        <!-- novalidate: las validaciones las hacemos nosotros y los errores salen en Toast -->
-                        <form id="formAlumnos" novalidate>
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Nombre del alumno</label>
-                                <input type="text" id="nombre" class="form-control" placeholder="Ej. Ana López">
+                <!-- ============ FORMULARIO ALUMNOS CENTRADO ============ -->
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="card shadow-sm mx-auto" style="max-width: 500px;">
+                            <div class="card-header bg-white">
+                                <h3 class="h5 mb-0">Alumnos</h3>
                             </div>
-                            <div class="mb-3">
-                                <label for="numControl" class="form-label">Número de control</label>
-                                <input type="text" id="numControl" class="form-control"
-                                        inputmode="numeric" maxlength="6" placeholder="6 dígitos">
-                                <div class="form-text">Exactamente 6 dígitos numéricos.</div>
+                            <div class="card-body">
+                                <!-- novalidate: las validaciones las hacemos nosotros y los errores salen en Toast -->
+                                <form id="formAlumnos" novalidate>
+                                    <div class="mb-3">
+                                        <label for="nombre" class="form-label">Nombre del alumno</label>
+                                        <input type="text" id="nombre" class="form-control" placeholder="Ej. Ana López">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="numControl" class="form-label">Número de control</label>
+                                        <input type="text" id="numControl" class="form-control"
+                                               inputmode="numeric" maxlength="6" placeholder="6 dígitos">
+                                        <div class="form-text">Exactamente 6 dígitos numéricos.</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
+                                        <input type="date" id="fechaNacimiento" class="form-control">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Guardar alumno</button>
+                                </form>
                             </div>
-                            <div class="mb-3">
-                                <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
-                                <input type="date" id="fechaNacimiento" class="form-control">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Guardar alumno</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -88,6 +93,25 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/sarailunacenobio05-cpu/Actividad-2-Utileria.js/js/utileria.js"></script>
     <script src="js/componente.js"></script>
+
+    <!-- ============ MODAL DE EDAD ============ -->
+    <div class="modal fade" id="modalEdad" tabindex="-1" aria-labelledby="modalEdadLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEdadLabel">Resultado de Registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalEdadBody">
+                    <!-- Se llena dinámicamente con JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Si no hay sesión, regresa al login
         const usuario = sessionStorage.getItem('usuario');
@@ -121,10 +145,6 @@
             + String(hoy.getMonth() + 1).padStart(2, '0') + '-'
             + String(hoy.getDate()).padStart(2, '0');
  
-        // Número de control: exactamente 6 dígitos.
-        // utileria.validarLongitud(valor, 6) solo comprueba que NO pase de 6,
-        // así que también verificamos que no tenga 5 o menos (= mínimo 6)
-        // y que todos los caracteres sean números.
         function validarNumeroControl(valor) {
             return /^\d+$/.test(valor)
                 && utileria.validarLongitud(valor, 6)
@@ -172,8 +192,6 @@
                 return;
             }
  
-            // "T00:00:00" hace que la fecha se tome en hora local (sin ella puede
-            // salir un día antes por la zona horaria)
             const edad = utileria.calcularEdad(fecha + 'T00:00:00');
  
             if (edad < 0 || edad > 120) {
@@ -181,9 +199,25 @@
                 return;
             }
  
-            Toast.success(nombre + ' (' + numControl + '), ' + edad + ' años, se guardó correctamente.', {
-                title: '¡Alumno registrado!'
-            });
+            // Determinar si es mayor o menor de edad
+            const esMayor = edad >= 18;
+            const estadoEdad = esMayor ? '<span class="text-success fw-bold">Mayor de edad</span>' : '<span class="text-warning fw-bold">Menor de edad</span>';
+
+            // Rellenar la información dentro del Modal
+            document.getElementById('modalEdadBody').innerHTML = `
+                <p><strong>Alumno:</strong> ${nombre}</p>
+                <p><strong>No. de Control:</strong> ${numControl}</p>
+                <p><strong>Edad calculada:</strong> ${edad} años</p>
+                <hr>
+                <p class="mb-0 fs-5">Clasificación: ${estadoEdad}</p>
+            `;
+
+            // Mostrar el Modal
+            const modalElement = document.getElementById('modalEdad');
+            const modalBootstrap = new bootstrap.Modal(modalElement);
+            modalBootstrap.show();
+
+            Toast.success('¡Alumno registrado correctamente!', { title: 'Éxito' });
             formAlumnos.reset();
         });
     </script>
