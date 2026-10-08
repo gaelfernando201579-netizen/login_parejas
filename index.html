@@ -6,6 +6,7 @@
     <title>Pantalla principal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="img/image.png">
+    <link rel="stylesheet" href="css/componente.css">
 </head>
 <body>
 
@@ -53,11 +54,40 @@
 
             <div class="container-fluid px-4 py-4">
                 <h2>Bienvenido al sistema</h2>
+
+                <!-- ============ FORMULARIO ALUMNOS ============ -->
+                <div class="card shadow-sm" style="max-width: 500px;">
+                    <div class="card-header bg-white">
+                        <h3 class="h5 mb-0">Alumnos</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- novalidate: las validaciones las hacemos nosotros y los errores salen en Toast -->
+                        <form id="formAlumnos" novalidate>
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre del alumno</label>
+                                <input type="text" id="nombre" class="form-control" placeholder="Ej. Ana López">
+                            </div>
+                            <div class="mb-3">
+                                <label for="numControl" class="form-label">Número de control</label>
+                                <input type="text" id="numControl" class="form-control"
+                                        inputmode="numeric" maxlength="6" placeholder="6 dígitos">
+                                <div class="form-text">Exactamente 6 dígitos numéricos.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
+                                <input type="date" id="fechaNacimiento" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Guardar alumno</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/sarailunacenobio05-cpu/Actividad-2-Utileria.js/js/utileria.js"></script>
+    <script src="js/componente.js"></script>
     <script>
         // Si no hay sesión, regresa al login
         const usuario = sessionStorage.getItem('usuario');
@@ -77,6 +107,84 @@
         document.getElementById('sidebarToggle').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar-wrapper');
             sidebar.classList.toggle('d-none');
+        });
+
+        // ---------- Formulario Alumnos ----------
+        const formAlumnos = document.getElementById('formAlumnos');
+        const inputNombre = document.getElementById('nombre');
+        const inputControl = document.getElementById('numControl');
+        const inputFecha = document.getElementById('fechaNacimiento');
+ 
+        // El calendario no deja elegir fechas futuras
+        const hoy = new Date();
+        inputFecha.max = hoy.getFullYear() + '-'
+            + String(hoy.getMonth() + 1).padStart(2, '0') + '-'
+            + String(hoy.getDate()).padStart(2, '0');
+ 
+        // Número de control: exactamente 6 dígitos.
+        // utileria.validarLongitud(valor, 6) solo comprueba que NO pase de 6,
+        // así que también verificamos que no tenga 5 o menos (= mínimo 6)
+        // y que todos los caracteres sean números.
+        function validarNumeroControl(valor) {
+            return /^\d+$/.test(valor)
+                && utileria.validarLongitud(valor, 6)
+                && !utileria.validarLongitud(valor, 5);
+        }
+ 
+        // Mientras escribe, el número de control solo acepta dígitos
+        inputControl.addEventListener('input', function() {
+            inputControl.value = inputControl.value.replace(/\D/g, '');
+        });
+ 
+        // Quita el borde rojo en cuanto el usuario vuelve a escribir
+        [inputNombre, inputControl, inputFecha].forEach(function(input) {
+            input.addEventListener('input', function() {
+                input.classList.remove('is-invalid');
+            });
+        });
+ 
+        // Marca el campo en rojo, muestra el Toast y lleva el foco al campo
+        function mostrarError(input, titulo, mensaje) {
+            input.classList.add('is-invalid');
+            input.focus();
+            Toast.error(mensaje, { title: titulo });
+        }
+ 
+        formAlumnos.addEventListener('submit', function(evento) {
+            evento.preventDefault();
+ 
+            const nombre = inputNombre.value.trim();
+            const numControl = inputControl.value.trim();
+            const fecha = inputFecha.value; // formato AAAA-MM-DD
+ 
+            if (nombre === '' || !utileria.soloLetras(nombre)) {
+                mostrarError(inputNombre, 'Nombre inválido', 'El nombre solo puede contener letras y espacios.');
+                return;
+            }
+ 
+            if (!validarNumeroControl(numControl)) {
+                mostrarError(inputControl, 'Número de control inválido', 'El número de control debe tener exactamente 6 dígitos.');
+                return;
+            }
+ 
+            if (fecha === '') {
+                mostrarError(inputFecha, 'Fecha requerida', 'Selecciona la fecha de nacimiento.');
+                return;
+            }
+ 
+            // "T00:00:00" hace que la fecha se tome en hora local (sin ella puede
+            // salir un día antes por la zona horaria)
+            const edad = utileria.calcularEdad(fecha + 'T00:00:00');
+ 
+            if (edad < 0 || edad > 120) {
+                mostrarError(inputFecha, 'Fecha inválida', 'La fecha de nacimiento no es válida.');
+                return;
+            }
+ 
+            Toast.success(nombre + ' (' + numControl + '), ' + edad + ' años, se guardó correctamente.', {
+                title: '¡Alumno registrado!'
+            });
+            formAlumnos.reset();
         });
     </script>
 </body>
